@@ -50,14 +50,13 @@ class Program[F[_], Dir, File](implicit
     _ <- mkFile.mkFile(testDir, "baz")
 
     files <- listDir.listFiles(testDir)
-    _ <- files.traverse(f => {
-      printer.printName(f)
-      for {
-        s <- f2s.file2String(f)
-        d <- mkDir.mkDir(testDir, s(0).toString)
-        _ <- mvFile.mvFile(f, d)
-      } yield ()
-    })
+    _ <- files.traverse(f => for {
+      _ <- printer.printName(f)
+      s <- f2s.file2String(f)
+      d <- mkDir.mkDir(testDir, s(0).toString)
+      _ <- mvFile.mvFile(f, d)
+    } yield ()
+    )
   } yield ()
 }
 
